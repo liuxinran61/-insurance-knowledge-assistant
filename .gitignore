@@ -1,0 +1,34 @@
+# Sensitive configuration
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Frontend
+node_modules/
+.next/
+dist/
+build/
+
+# IDE and operating system
+.DS_Store
+.vscode/
+.idea/
+
+# Runtime data
+logs/
+*.log
+data/uploads/
+data/indexes/
+
+# Secrets and databases
+*.db
+*.sqlite
+*.sqlite3
