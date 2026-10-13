@@ -3,7 +3,7 @@ import time
 
 import httpx
 
-BASE_URL = "http://localhost:8000/api"
+BASE_URL = "http://localhost:8001/api"
 TEST_USER = {
     "username": "admin",
     "email": "admin@example.com",

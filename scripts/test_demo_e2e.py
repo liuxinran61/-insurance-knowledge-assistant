@@ -3,7 +3,7 @@ import random
 import sys
 from playwright.sync_api import sync_playwright
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8001"
 
 suffix = random.randint(1000, 9999)
 TEST_USER = {

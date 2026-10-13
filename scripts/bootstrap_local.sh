@@ -39,7 +39,7 @@ docker compose up -d --build
 echo -e "${CYAN}[3/5] 等待 API 服务就绪...${NC}"
 MAX_WAIT=60
 WAITED=0
-until curl -sf http://localhost:8000/api/v1/health >/dev/null 2>&1; do
+until curl -sf http://localhost:8001/api/v1/health/ >/dev/null 2>&1; do
   sleep 2
   WAITED=$((WAITED + 2))
   if [ $WAITED -ge $MAX_WAIT ]; then
@@ -88,8 +88,8 @@ echo -e "${GREEN}========================================${NC}"
 echo ""
 echo -e "  LLM 模式:    ${MOCK_MODE}"
 echo ""
-echo -e "  API Docs:     ${CYAN}http://localhost:8000/docs${NC}"
-echo -e "  ReDoc:        ${CYAN}http://localhost:8000/redoc${NC}"
+echo -e "  API Docs:     ${CYAN}http://localhost:8001/docs${NC}"
+echo -e "  ReDoc:        ${CYAN}http://localhost:8001/redoc${NC}"
 echo -e "  Prometheus:   ${CYAN}http://localhost:9090${NC}"
 echo -e "  Grafana:      ${CYAN}http://localhost:3000${NC} (admin/admin)"
 echo -e "  Flower:       ${CYAN}http://localhost:5555${NC}"

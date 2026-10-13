@@ -14,7 +14,7 @@ def main():
 
         print("Capturing Swagger UI...")
         try:
-            page.goto("http://localhost:8000/docs", wait_until="networkidle")
+            page.goto("http://localhost:8001/docs", wait_until="networkidle")
             page.wait_for_selector(".swagger-ui")
             time.sleep(2)  # wait for animations
             page.screenshot(path="docs/images/swagger-overview.png")
@@ -24,7 +24,7 @@ def main():
 
         print("Capturing Demo Interface with mock data...")
         try:
-            page.goto("http://localhost:8000/demo.html", wait_until="networkidle")
+            page.goto("http://localhost:8001/demo.html", wait_until="networkidle")
             time.sleep(1)
             # Inject fake data to make it look like a RAG session
             page.evaluate("""() => {

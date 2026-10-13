@@ -1,6 +1,6 @@
 import requests
 
-BASE = "http://localhost:8000"
+BASE = "http://localhost:8001"
 
 email = "ragtest@example.com"
 password = "ragpass123"

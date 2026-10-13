@@ -15,7 +15,7 @@ def main():
 
         try:
             print("1. 访问 Demo 页面...")
-            page.goto("http://localhost:8000/demo.html", wait_until="networkidle")
+            page.goto("http://localhost:8001/demo.html", wait_until="networkidle")
             time.sleep(1)
 
             # 截取初始状态
@@ -27,7 +27,7 @@ def main():
 
             # 确保用户存在
             requests.post(
-                "http://localhost:8000/api/v1/users/",
+                "http://localhost:8001/api/v1/users/",
                 json={
                     "username": "demouser",
                     "email": "demo@example.com",
@@ -36,7 +36,7 @@ def main():
             )
             # 登录拿 token
             resp = requests.post(
-                "http://localhost:8000/api/v1/auth/login",
+                "http://localhost:8001/api/v1/auth/login",
                 data={"username": "demo@example.com", "password": "password123"},
             )
 
