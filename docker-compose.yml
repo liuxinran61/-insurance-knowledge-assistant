@@ -1,0 +1,172 @@
+services:
+  # ============================
+  # 核心服务（默认启动）
+  # docker compose up -d
+  # ============================
+
+  # 后端 API 服务
+  api:
+    platform: linux/amd64
+    build: .
+    container_name: fastapi-starter-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/fastapi_db
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_BASE_URL=http://ollama:11434/v1
+      - EMBEDDING_BASE_URL=http://ollama:11434/v1
+    volumes:
+      - .:/app
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # 数据库服务
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: fastapi-starter-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=fastapi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fastapi_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存与消息队列
+  redis:
+    image: redis:7-alpine
+    container_name: fastapi-starter-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 异步任务 Worker 服务 (Celery)
+  celery_worker:
+    platform: linux/amd64
+    build: .
+    container_name: fastapi-starter-worker
+    command: celery -A app.worker.celery_app worker --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/fastapi_db
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_BASE_URL=http://ollama:11434/v1
+      - EMBEDDING_BASE_URL=http://ollama:11434/v1
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+  # ============================
+  # 可选服务 — 需显式启用 profile
+  # docker compose --profile full up -d        → 加上 Ollama
+  # docker compose --profile monitor up -d     → 加上监控
+  # docker compose --profile full --profile monitor up -d → 全部
+  # ============================
+
+  # Celery 任务监控面板
+  flower:
+    platform: linux/amd64
+    build: .
+    container_name: fastapi-starter-flower
+    profiles:
+      - monitor
+    command: celery -A app.worker.celery_app flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # 本地大模型与向量服务 (Ollama)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: fastapi-starter-ollama
+    profiles:
+      - full
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list > /dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # 可观测性服务：Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: fastapi-starter-prometheus
+    profiles:
+      - monitor
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    depends_on:
+      - api
+
+  # 可观测性服务：Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: fastapi-starter-grafana
+    profiles:
+      - monitor
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
+  prometheus_data:
+  grafana_data:
