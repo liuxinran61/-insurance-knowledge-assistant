@@ -9,8 +9,8 @@ const styles: Record<string, string> = {
 }
 
 const labels: Record<string, string> = {
-  pending: '待办',
-  in_progress: '进行中',
+  pending: '待学习',
+  in_progress: '学习中',
   completed: '已完成',
 }
 

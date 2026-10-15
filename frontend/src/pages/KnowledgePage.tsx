@@ -59,7 +59,7 @@ export default function KnowledgePage() {
         <button onClick={() => navigate('/chat')} className="text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
           ← 返回
         </button>
-        <h1 className="text-sm font-semibold text-[var(--text-primary)]">知识库管理</h1>
+        <h1 className="text-sm font-semibold text-[var(--text-primary)]">保险售后知识库</h1>
       </header>
 
       <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -67,15 +67,22 @@ export default function KnowledgePage() {
           <input ref={fileRef} type="file" accept=".txt,.md,.pdf" onChange={handleUpload} className="hidden" />
           <button onClick={() => fileRef.current?.click()} disabled={uploading} className="disabled:opacity-50">
             <IconUpload className="mx-auto mb-3 text-[var(--text-tertiary)]" />
-            <p className="text-sm text-[var(--text-tertiary)]">{uploading ? '上传中...' : '拖拽或点击上传文档'}</p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-1">支持 .txt .md .pdf 格式</p>
+            <p className="text-sm text-[var(--text-tertiary)]">
+              {uploading ? '正在处理知识文档...' : '上传保险知识文档'}
+            </p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
+              支持产品条款、理赔流程、客服话术和业务通知（.txt .md .pdf）
+            </p>
+            <p className="text-xs text-[var(--color-error)] mt-2">
+              请勿上传客户姓名、身份证号、保单号等敏感个人信息
+            </p>
           </button>
         </div>
 
         {error && <p className="text-sm text-[var(--color-error)] bg-[var(--color-error)]/10 rounded-lg px-3 py-2">{error}</p>}
 
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-[var(--text-primary)]">文档列表 ({docs.length})</h2>
+          <h2 className="text-sm font-medium text-[var(--text-primary)]">知识文档列表 ({docs.length})</h2>
           <div className="flex items-center gap-2">
             <button onClick={() => setViewMode(viewMode === 'card' ? 'table' : 'card')} className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
               {viewMode === 'card' ? '表格视图' : '卡片视图'}
@@ -95,8 +102,8 @@ export default function KnowledgePage() {
         ) : docs.length === 0 ? (
           <div className="text-center py-16">
             <IconFile className="mx-auto mb-3 text-[var(--text-tertiary)]" />
-            <p className="text-sm text-[var(--text-tertiary)]">暂无文档</p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-1">上传文档以开始构建知识库</p>
+            <p className="text-sm text-[var(--text-tertiary)]">暂无保险知识文档</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">上传产品条款、理赔流程或客服话术开始构建知识库</p>
           </div>
         ) : viewMode === 'table' ? (
           <div className="rounded-xl border border-[var(--border-primary)] overflow-hidden">
@@ -106,7 +113,7 @@ export default function KnowledgePage() {
                   <th className="text-left px-4 py-3 font-medium">文件名</th>
                   <th className="text-left px-4 py-3 font-medium">类型</th>
                   <th className="text-left px-4 py-3 font-medium">状态</th>
-                  <th className="text-left px-4 py-3 font-medium">Chunks</th>
+                  <th className="text-left px-4 py-3 font-medium">知识片段</th>
                   <th className="text-left px-4 py-3 font-medium">上传时间</th>
                   <th className="text-right px-4 py-3 font-medium">操作</th>
                 </tr>
@@ -159,7 +166,7 @@ export default function KnowledgePage() {
                     <span className={`w-2 h-2 rounded-full ${statusColors[doc.status]}`} />
                     {statusLabels[doc.status] || doc.status}
                   </span>
-                  {doc.status === 'ready' && <span>{doc.chunks_count} chunks</span>}
+                  {doc.status === 'ready' && <span>{doc.chunks_count} 个知识片段</span>}
                   <span>{new Date(doc.created_at).toLocaleDateString('zh-CN')}</span>
                 </div>
               </div>

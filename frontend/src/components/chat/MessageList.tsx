@@ -61,7 +61,7 @@ function MessageBubble({ message }: { message: Message }) {
   return (
     <div className="flex items-start gap-3">
       <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center shrink-0 mt-1">
-        <span className="text-white text-xs font-bold">A</span>
+        <span className="text-white text-xs font-bold">保</span>
       </div>
       <div className="flex-1 min-w-0 space-y-3">
         {message.reasoning && (
@@ -102,10 +102,10 @@ function ReasoningBlock({ content }: { content: string }) {
 
 function EmptyState({ onQuickAsk }: { onQuickAsk?: (question: string) => void }) {
   const quickQuestions = [
-    { label: '这个系统有哪些功能？', icon: '💡' },
-    { label: '帮我算一下 123 × 456', icon: '🧮' },
-    { label: '创建一个任务：学习 FastAPI', icon: '📋' },
-    { label: '今天北京天气怎么样？', icon: '🌤' },
+    { label: '车险客户报案后，标准理赔流程是什么？', icon: '🚗' },
+    { label: '健康险等待期内出险，应该如何向客户解释？', icon: '🏥' },
+    { label: '客户申请退保，需要确认哪些信息和风险？', icon: '📋' },
+    { label: '最近有哪些需要客服关注的知识更新？', icon: '🔔' },
   ]
 
   return (
@@ -117,10 +117,10 @@ function EmptyState({ onQuickAsk }: { onQuickAsk?: (question: string) => void })
           </svg>
         </div>
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-1">
-          开始对话
+          保险售后知识问答
         </h2>
         <p className="text-sm text-[var(--text-tertiary)] mb-6">
-          试试以下问题，快速体验核心功能
+          从保险条款、理赔流程和售后服务规范开始学习
         </p>
         <div className="grid grid-cols-1 gap-2">
           {quickQuestions.map((q) => (

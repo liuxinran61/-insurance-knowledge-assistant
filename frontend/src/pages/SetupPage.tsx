@@ -84,7 +84,7 @@ export default function SetupPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            欢迎使用 FastAPI Starter
+            欢迎使用保知通
           </h1>
           <p className="text-sm text-[var(--text-tertiary)] mt-1">
             创建管理员账号，开始使用
@@ -166,7 +166,7 @@ export default function SetupPage() {
         </div>
 
         <p className="text-center mt-6 text-xs text-[var(--text-tertiary)]">
-          FastAPI Starter — 开箱即用的 AI Agent 全栈模板
+          保知通 — 互联网保险售后客服知识助手
         </p>
       </div>
     </div>

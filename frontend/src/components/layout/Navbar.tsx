@@ -37,10 +37,10 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => voi
 
       <div className="flex items-center gap-2">
         <div className="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center">
-          <span className="text-white text-xs font-bold">A</span>
+          <span className="text-white text-xs font-bold">保</span>
         </div>
         <span className="text-sm font-semibold text-[var(--text-primary)] hidden sm:block">
-          Agent
+          保知通
         </span>
       </div>
 
@@ -49,7 +49,7 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => voi
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <input
             type="text"
-            placeholder="搜索知识库..."
+            placeholder="搜索保险条款、理赔流程或售后话术..."
             className="w-full h-9 pl-9 pr-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
           />
         </div>

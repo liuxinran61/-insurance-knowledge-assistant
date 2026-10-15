@@ -61,7 +61,7 @@ export default function TasksPanel() {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">
-          任务列表
+          学习任务
         </span>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -76,14 +76,14 @@ export default function TasksPanel() {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="任务标题"
+            placeholder="学习主题"
             required
             className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-tertiary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="描述（可选）"
+            placeholder="学习要求（可选）"
             rows={2}
             className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-tertiary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
           />
@@ -114,12 +114,12 @@ export default function TasksPanel() {
         </div>
       ) : tasks.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-sm text-[var(--text-tertiary)]">还没有任务</p>
+          <p className="text-sm text-[var(--text-tertiary)]">暂无学习任务</p>
           <button
             onClick={() => setShowForm(true)}
             className="mt-2 text-xs text-brand-500 hover:text-brand-400 transition-colors"
           >
-            创建第一个任务
+            创建第一个学习任务
           </button>
         </div>
       ) : (

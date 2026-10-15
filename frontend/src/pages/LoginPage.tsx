@@ -62,7 +62,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            FastAPI AI Agent
+            保知通
           </h1>
           <p className="text-sm text-[var(--text-tertiary)] mt-1">
             登录以继续使用
@@ -163,7 +163,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center mt-6 text-xs text-[var(--text-tertiary)]">
-          FastAPI AI Agent v0.1.0
+          保知通 v0.1.0
         </p>
       </div>
     </div>

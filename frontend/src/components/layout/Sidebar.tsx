@@ -46,7 +46,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
             }`}
           >
             <IconWrench />
-            任务
+            学习任务
           </button>
           <button
             onClick={onClose}

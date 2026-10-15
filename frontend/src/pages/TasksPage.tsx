@@ -9,8 +9,8 @@ type FilterKey = 'all' | 'pending' | 'in_progress' | 'completed'
 
 const filterLabels: Record<FilterKey, string> = {
   all: '全部',
-  pending: '待办',
-  in_progress: '进行中',
+  pending: '待学习',
+  in_progress: '学习中',
   completed: '已完成',
 }
 
@@ -73,7 +73,7 @@ export default function TasksPage() {
         <button onClick={() => navigate('/chat')} className="text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
           ← 返回
         </button>
-        <h1 className="text-sm font-semibold text-[var(--text-primary)]">任务管理</h1>
+        <h1 className="text-sm font-semibold text-[var(--text-primary)]">新人学习任务</h1>
       </header>
 
       <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -97,7 +97,7 @@ export default function TasksPage() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
           >
             <IconPlus />
-            新建任务
+            新建学习任务
           </button>
         </div>
 
@@ -106,14 +106,14 @@ export default function TasksPage() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="任务标题"
+              placeholder="学习主题，例如：百万医疗险理赔基础流程"
               required
               className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
             />
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="描述（可选）"
+              placeholder="学习要求或参考资料（可选）"
               rows={3}
               className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
             />
@@ -136,10 +136,10 @@ export default function TasksPage() {
           </div>
         ) : filteredTasks.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-sm text-[var(--text-tertiary)]">{filter === 'all' ? '还没有任务' : `没有${filterLabels[filter]}状态的任务`}</p>
+            <p className="text-sm text-[var(--text-tertiary)]">{filter === 'all' ? '暂无学习任务' : `暂无${filterLabels[filter]}的学习任务`}</p>
             {filter === 'all' && (
               <button onClick={() => setShowForm(true)} className="mt-2 text-xs text-brand-500 hover:text-brand-400 transition-colors">
-                创建第一个任务
+                创建第一个学习任务
               </button>
             )}
           </div>

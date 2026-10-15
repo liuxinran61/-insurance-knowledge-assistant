@@ -85,9 +85,9 @@ export default function KnowledgePanel() {
         >
           <IconUpload className="mx-auto mb-2 text-[var(--text-tertiary)]" />
           <p className="text-sm text-[var(--text-tertiary)]">
-            {uploading ? '上传中...' : '点击上传文档'}
+            {uploading ? '正在处理...' : '上传保险知识文档'}
           </p>
-          <p className="text-xs text-[var(--text-tertiary)] mt-1">支持 .txt .md .pdf</p>
+          <p className="text-xs text-[var(--text-tertiary)] mt-1">支持条款、理赔流程和客服话术</p>
         </button>
       </div>
 
@@ -100,7 +100,7 @@ export default function KnowledgePanel() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleQuery()}
-            placeholder="搜索知识库..."
+            placeholder="输入产品、条款或理赔问题..."
             className="w-full h-9 pl-9 pr-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
           />
         </div>
@@ -115,7 +115,7 @@ export default function KnowledgePanel() {
         {queryResult && (
           <div className="mt-2 p-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-[var(--text-tertiary)] uppercase">查询结果</span>
+              <span className="text-xs font-medium text-[var(--text-tertiary)] uppercase">知识库回答</span>
               <button onClick={() => setQueryResult(null)} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
                 <IconX />
               </button>
@@ -123,7 +123,7 @@ export default function KnowledgePanel() {
             <p className="text-sm text-[var(--text-primary)] leading-relaxed">{queryResult.answer}</p>
             {queryResult.source_chunks.length > 0 && (
               <div className="mt-2 pt-2 border-t border-[var(--border-primary)]">
-                <p className="text-xs text-[var(--text-tertiary)] mb-1">来源片段 ({queryResult.source_chunks.length})</p>
+                <p className="text-xs text-[var(--text-tertiary)] mb-1">参考依据 ({queryResult.source_chunks.length})</p>
                 {queryResult.source_chunks.map((chunk, i) => (
                   <p key={i} className="text-xs text-[var(--text-tertiary)] mt-1 line-clamp-2">
                     [{i + 1}] {chunk}
@@ -138,7 +138,7 @@ export default function KnowledgePanel() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">
-            文档列表
+            保险知识文档
           </span>
           <button
             onClick={loadDocs}
@@ -156,8 +156,8 @@ export default function KnowledgePanel() {
           </div>
         ) : documents.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-[var(--text-tertiary)]">暂无文档</p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-1">上传文档以开始构建知识库</p>
+            <p className="text-sm text-[var(--text-tertiary)]">暂无保险知识文档</p>
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">上传保险资料后即可进行知识问答</p>
           </div>
         ) : (
           <div className="space-y-1">
@@ -170,7 +170,7 @@ export default function KnowledgePanel() {
                   <p className="text-sm text-[var(--text-primary)] truncate">{doc.filename}</p>
                   <p className="text-xs text-[var(--text-tertiary)]">
                     {statusLabels[doc.status] || doc.status}
-                    {doc.status === 'ready' && ` · ${doc.chunks_count} chunks`}
+                    {doc.status === 'ready' && ` · ${doc.chunks_count} 个知识片段`}
                   </p>
                 </div>
                 <span className={`w-2 h-2 rounded-full shrink-0 ${statusColors[doc.status] || statusColors.queued}`} />

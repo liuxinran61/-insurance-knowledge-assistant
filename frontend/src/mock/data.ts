@@ -21,10 +21,10 @@ const mockUser: User = {
 }
 
 const mockDocuments: Document[] = [
-  { id: 1, filename: '快速上手指南.md', file_type: 'md', status: 'ready', chunks_count: 5, processing_task_id: null, error_message: null, created_at: daysAgo(2) },
-  { id: 2, filename: '产品需求文档.pdf', file_type: 'pdf', status: 'ready', chunks_count: 12, processing_task_id: null, error_message: null, created_at: daysAgo(1) },
-  { id: 3, filename: 'API 参考.txt', file_type: 'txt', status: 'processing', chunks_count: 0, processing_task_id: 'task-abc', error_message: null, created_at: NOW },
-  { id: 4, filename: '设计规范.md', file_type: 'md', status: 'failed', chunks_count: 0, processing_task_id: null, error_message: '向量化失败：维度不匹配', created_at: daysAgo(3) },
+  { id: 1, filename: '车险理赔服务流程.md', file_type: 'md', status: 'ready', chunks_count: 5, processing_task_id: null, error_message: null, created_at: daysAgo(2) },
+  { id: 2, filename: '百万医疗险产品条款.pdf', file_type: 'pdf', status: 'ready', chunks_count: 12, processing_task_id: null, error_message: null, created_at: daysAgo(1) },
+  { id: 3, filename: '退保客服话术.txt', file_type: 'txt', status: 'processing', chunks_count: 0, processing_task_id: 'task-abc', error_message: null, created_at: NOW },
+  { id: 4, filename: '知识更新管理规范.md', file_type: 'md', status: 'failed', chunks_count: 0, processing_task_id: null, error_message: '向量化失败：维度不匹配', created_at: daysAgo(3) },
 ]
 
 const mockTasks: Task[] = [
@@ -118,7 +118,7 @@ const MOCK_RESPONSES: MockEntry[] = [
   { method: 'PUT', path: '/tasks/', handler: (data) => data },
   { method: 'DELETE', path: '/tasks/', handler: () => ({ message: '已删除' }) },
   { method: 'GET', path: '/rag/documents', handler: () => mockDocuments },
-  { method: 'POST', path: '/rag/upload', handler: () => ({ ...mockDocuments[0], id: Date.now(), filename: '新建文档.md', status: 'queued', chunks_count: 0 }) },
+  { method: 'POST', path: '/rag/upload', handler: () => ({ ...mockDocuments[0], id: Date.now(), filename: '新建保险知识.md', status: 'queued', chunks_count: 0 }) },
   { method: 'DELETE', path: '/rag/documents/', handler: () => ({ message: '文档已删除' }) },
   { method: 'POST', path: '/rag/query', handler: () => ({
     query: 'mock query',

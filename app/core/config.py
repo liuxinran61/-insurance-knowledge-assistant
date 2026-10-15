@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     """
 
     # 项目基础信息
-    PROJECT_NAME: str = "FastAPI Starter"
+    PROJECT_NAME: str = "保知通"
     VERSION: str = "0.1.0"
     TESTING: bool = False
 

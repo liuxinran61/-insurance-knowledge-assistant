@@ -88,9 +88,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="FastAPI Starter",
-    description="A production-ready FastAPI AI Agent starter project.",
-    version="0.1.0",
+    title=settings.PROJECT_NAME,
+    description="面向互联网保险售后客服的知识学习与智能问答系统",
+    version=settings.VERSION,
     lifespan=lifespan,
     docs_url=None,
 )
@@ -222,6 +222,6 @@ else:
     @app.get("/", summary="根目录欢迎信息", tags=["Root"])
     async def root():
         return {
-            "message": "Welcome to FastAPI Starter. Visit /docs for API documentation.",
+            "message": "欢迎使用保知通，请访问 /docs 查看 API 文档。",
             "docs_url": "/docs",
         }
