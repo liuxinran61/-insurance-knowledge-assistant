@@ -11,10 +11,19 @@ from redis.asyncio import Redis
 from sqlalchemy import text
 
 from app.api.middleware import RequestIDMiddleware
-from app.api.routers import auth, chat, health, observability, rag, tasks, users, worker
+from app.api.routers import (
+    auth,
+    chat,
+    health,
+    knowledge_updates,
+    observability,
+    rag,
+    tasks,
+    users,
+    worker,
+)
 from app.core.config import settings
 from app.core.logging import logger
-from app.db.base import Base
 from app.db.session import engine
 from app.utils.errors import AppException, app_exception_handler, http_exception_handler
 
@@ -67,9 +76,6 @@ async def lifespan(app: FastAPI):
                 )
     except Exception as e:
         logger.warning(f"pgvector extension check failed (non-fatal): {e}")
-
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables ensured.")
 
     # Redis 连通性检查
     logger.info("Testing Redis connection...")
@@ -199,6 +205,11 @@ app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["Tasks"])
 app.include_router(worker.router, prefix="/api/v1/worker", tags=["Worker (Async)"])
 app.include_router(rag.router, prefix="/api/v1/rag", tags=["RAG"])
 app.include_router(observability.router, prefix="/api/v1/observability", tags=["Observability"])
+app.include_router(
+    knowledge_updates.router,
+    prefix="/api/v1/knowledge-updates",
+    tags=["Knowledge Updates"],
+)
 
 
 # 挂载前端静态文件目录
