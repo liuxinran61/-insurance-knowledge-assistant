@@ -1,11 +1,12 @@
 import asyncio
 import json
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
 from redis.asyncio import Redis
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -56,12 +57,27 @@ class RAGService:
         )
 
     def create_document_record(
-        self, *, filename: str, content: str, owner_id: int, file_type: str = "txt"
+        self,
+        *,
+        filename: str,
+        content: str,
+        owner_id: int,
+        file_type: str = "txt",
+        business_line: Optional[str] = None,
+        product: Optional[str] = None,
+        knowledge_version: Optional[str] = None,
+        effective_at: Optional[datetime] = None,
+        folder_path: Optional[str] = None,
     ) -> Document:
         document = Document(
             owner_id=owner_id,
             filename=filename,
             file_type=file_type,
+            business_line=business_line,
+            product=product,
+            knowledge_version=knowledge_version,
+            effective_at=effective_at,
+            folder_path=folder_path,
             content=content,
             status=DOCUMENT_STATUS_QUEUED,
             chunks_count=0,
@@ -254,23 +270,47 @@ class RAGService:
         return selected
 
     async def retrieve_relevant_chunks(
-        self, *, query: str, owner_id: int, top_k: int = 3
+        self,
+        *,
+        query: str,
+        owner_id: int,
+        top_k: int = 3,
+        business_line: Optional[str] = None,
+        product: Optional[str] = None,
+        as_of: Optional[datetime] = None,
+        document_id: Optional[int] = None,
+        folder_path: Optional[str] = None,
     ) -> List[DocumentChunk]:
-        """根据 query 检索最相关的 DocumentChunks，并在可用时做重排。"""
+        """根据 query 和业务元数据检索相关的 DocumentChunks。"""
         if not self.has_ready_documents(owner_id=owner_id):
             return []
 
         query_embeddings = await self.get_embeddings([query])
         query_vector = query_embeddings[0]
         recall_k = top_k * 3
+        effective_time = as_of or datetime.now(timezone.utc)
+        if effective_time.tzinfo is None:
+            effective_time = effective_time.replace(tzinfo=timezone.utc)
+
+        filters = [
+            Document.owner_id == owner_id,
+            Document.status == DOCUMENT_STATUS_READY,
+            # 保留旧文档兼容性；填写了生效日期的资料必须已经生效。
+            or_(Document.effective_at.is_(None), Document.effective_at <= effective_time),
+        ]
+        if business_line:
+            filters.append(Document.business_line == business_line)
+        if product:
+            filters.append(Document.product == product)
+        if document_id:
+            filters.append(Document.id == document_id)
+        if folder_path:
+            filters.append(Document.folder_path == folder_path)
 
         stmt = (
             select(DocumentChunk)
             .join(Document, DocumentChunk.document_id == Document.id)
-            .where(
-                Document.owner_id == owner_id,
-                Document.status == DOCUMENT_STATUS_READY,
-            )
+            .where(*filters)
             .order_by(DocumentChunk.embedding.cosine_distance(query_vector))
             .limit(recall_k)
         )

@@ -1,11 +1,20 @@
 import json
+from datetime import datetime
+from typing import Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user, get_db
-from app.schemas.rag import DocumentResponse, RAGQueryRequest, RAGQueryResponse
+from app.schemas.rag import (
+    DocumentDetailResponse,
+    DocumentResponse,
+    RAGQueryRequest,
+    RAGQueryResponse,
+    SourceReference,
+)
+from app.models.document import DocumentChunk
 from app.services.llm_observability_service import (
     create_llm_call_log,
     elapsed_ms,
@@ -16,11 +25,48 @@ from app.services.llm_service import get_llm_client
 from app.services.rag_service import RAGService, append_session_message, load_session_history
 from app.utils.file_parser import get_supported_extensions, parse_file
 from app.worker.tasks import process_document_task
+from app.agents.knowledge_agent import KnowledgeAgent
 
 router = APIRouter()
 
 SUPPORTED_EXTENSIONS = get_supported_extensions()
 SUPPORTED_EXT_TEXT = ", ".join(SUPPORTED_EXTENSIONS)
+
+
+def build_source_references(chunks: list[DocumentChunk]) -> list[SourceReference]:
+    """将向量检索片段转换为前端可展示的资料引用。"""
+    return [
+        SourceReference(
+            document_id=chunk.document.id,
+            chunk_index=chunk.chunk_index,
+            filename=chunk.document.filename,
+            business_line=chunk.document.business_line,
+            product=chunk.document.product,
+            knowledge_version=chunk.document.knowledge_version,
+            effective_at=chunk.document.effective_at,
+            folder_path=chunk.document.folder_path,
+            excerpt=chunk.content[:300].strip(),
+        )
+        for chunk in chunks
+    ]
+
+
+def build_context_text(chunks: list[DocumentChunk]) -> str:
+    """在提示词中保留来源标签，让模型知道每段资料来自哪里。"""
+    context_texts = []
+    for index, chunk in enumerate(chunks, start=1):
+        document = chunk.document
+        version = document.knowledge_version or "未标注版本"
+        effective_at = (
+            document.effective_at.date().isoformat()
+            if document.effective_at
+            else "未标注生效日"
+        )
+        context_texts.append(
+            f"[相关资料 {index} | 文件: {document.filename} | 版本: {version} | 生效: {effective_at}]\n"
+            f"{chunk.content}"
+        )
+    return "\n\n".join(context_texts)
 
 
 @router.post(
@@ -32,6 +78,11 @@ SUPPORTED_EXT_TEXT = ", ".join(SUPPORTED_EXTENSIONS)
 )
 async def upload_document(
     file: UploadFile = File(...),
+    business_line: Optional[str] = Form(None),
+    product: Optional[str] = Form(None),
+    knowledge_version: Optional[str] = Form(None),
+    effective_at: Optional[datetime] = Form(None),
+    folder_path: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
@@ -71,6 +122,11 @@ async def upload_document(
             file_type=parsed.file_type,
             content=parsed.plain_text,
             owner_id=current_user.id,
+            business_line=business_line,
+            product=product,
+            knowledge_version=knowledge_version,
+            effective_at=effective_at,
+            folder_path=folder_path,
         )
         task = process_document_task.delay(doc.id)
         doc = rag_service.attach_processing_task(
@@ -100,8 +156,8 @@ async def list_documents(
 
 @router.get(
     "/documents/{document_id}",
-    response_model=DocumentResponse,
-    summary="查看文档处理状态",
+    response_model=DocumentDetailResponse,
+    summary="查看文档详情与已解析文本",
     tags=["RAG"],
 )
 async def get_document(
@@ -150,75 +206,78 @@ async def query_knowledge_base(
     rag_service = RAGService(db)
     started_at = start_timer()
     try:
-        chunks = await rag_service.retrieve_relevant_chunks(
-            query=request.query,
-            owner_id=current_user.id,
-            top_k=request.top_k,
-        )
-
-        if not chunks:
-            return RAGQueryResponse(
-                query=request.query,
-                answer="知识库中暂无已处理完成的相关文档，请先上传文档并等待处理完成。",
-                source_chunks=[],
+        history = None
+        if request.session_id:
+            history = await load_session_history(
+                current_user.id,
+                request.session_id,
             )
 
-        # 3. 组装 Prompt
-        context_texts = []
-        for i, chunk in enumerate(chunks, 1):
-            context_texts.append(f"[相关片段 {i}]:\n{chunk.content}")
-
-        context_str = "\n\n".join(context_texts)
-
-        system_prompt = (
-            "你是一个专业的问答助手。请基于以下提供的参考资料，准确回答用户的问题。\n"
-            "如果你不知道答案，或者参考资料中没有相关信息，请直接说明，不要编造。\n\n"
-            f"=== 参考资料 ===\n{context_str}\n=== 结束 ==="
+        agent_result = await KnowledgeAgent(rag_service).run(
+            query=request.query,
+            owner_id=current_user.id,
+            history=history,
+            business_line=request.business_line,
+            product=request.product,
+            as_of=request.as_of,
+            document_id=request.document_id,
+            folder_path=request.folder_path,
         )
 
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": request.query},
+        sources = [
+            SourceReference(
+                document_id=source["document_id"],
+                chunk_index=source["chunk_index"],
+                filename=source["filename"],
+                folder_path=source.get("folder_path"),
+                product=source.get("product"),
+                knowledge_version=source.get("knowledge_version"),
+                effective_at=source.get("effective_at"),
+                excerpt=source["content"][:300].strip(),
+            )
+            for source in agent_result.sources
         ]
 
         if request.session_id:
-            session_history = await load_session_history(current_user.id, request.session_id)
-            messages = (
-                [{"role": "system", "content": system_prompt}]
-                + session_history
-                + [{"role": "user", "content": request.query}]
-            )
-
-        llm_info = get_llm_client(current_user)
-        response = await llm_info.client.chat.completions.create(
-            model=llm_info.model_name,
-            messages=messages,
-            temperature=0.1,  # 降低 temperature 以保证 RAG 问答的稳定性
-        )
-        response_text = response.choices[0].message.content
-        prompt_tokens, completion_tokens, total_tokens = extract_usage(response)
-
-        if request.session_id:
-            await append_session_message(current_user.id, request.session_id, "user", request.query)
             await append_session_message(
-                current_user.id, request.session_id, "assistant", response_text
+                current_user.id,
+                request.session_id,
+                "user",
+                request.query,
             )
+            await append_session_message(
+                current_user.id,
+                request.session_id,
+                "assistant",
+                agent_result.answer,
+            )
+
         create_llm_call_log(
             db,
             user_id=current_user.id,
             endpoint="/api/v1/rag/query",
             prompt=request.query,
-            response=response_text,
-            tool_calls=None,
-            prompt_tokens=prompt_tokens,
-            completion_tokens=completion_tokens,
-            total_tokens=total_tokens,
+            response=agent_result.answer,
+            tool_calls=(
+                json.dumps(agent_result.tool_calls, ensure_ascii=False)
+                if agent_result.tool_calls
+                else None
+            ),
+            prompt_tokens=agent_result.prompt_tokens,
+            completion_tokens=agent_result.completion_tokens,
+            total_tokens=agent_result.total_tokens,
             latency_ms=elapsed_ms(started_at),
             status="success",
         )
 
         return RAGQueryResponse(
-            query=request.query, answer=response_text, source_chunks=[c.content for c in chunks]
+            query=request.query,
+            answer=agent_result.answer,
+            source_chunks=[
+                source["content"]
+                for source in agent_result.sources
+            ],
+            sources=sources,
         )
 
     except Exception as e:
@@ -253,6 +312,11 @@ async def query_knowledge_base_stream(
         query=request.query,
         owner_id=current_user.id,
         top_k=request.top_k,
+        business_line=request.business_line,
+        product=request.product,
+        as_of=request.as_of,
+        document_id=request.document_id,
+        folder_path=request.folder_path,
     )
 
     if not chunks:
@@ -262,6 +326,7 @@ async def query_knowledge_base_stream(
                 {
                     "content": "知识库中暂无已处理完成的相关文档，请先上传文档并等待处理完成。",
                     "source_chunks": [],
+                    "sources": [],
                 },
                 ensure_ascii=False,
             )
@@ -270,15 +335,15 @@ async def query_knowledge_base_stream(
 
         return StreamingResponse(_empty(), media_type="text/event-stream")
 
-    context_texts = [f"[相关片段 {i}]:\n{chunk.content}" for i, chunk in enumerate(chunks, 1)]
-    context_str = "\n\n".join(context_texts)
+    context_str = build_context_text(chunks)
     system_prompt = (
         "你是一个专业的问答助手。请基于以下提供的参考资料，准确回答用户的问题。\n"
         "如果你不知道答案，或者参考资料中没有相关信息，请直接说明，不要编造。\n\n"
         f"=== 参考资料 ===\n{context_str}\n=== 结束 ==="
     )
 
-    source_chunk_contents = [c.content for c in chunks]
+    source_chunk_contents = [chunk.content for chunk in chunks]
+    sources = build_source_references(chunks)
 
     async def _stream():
         llm_info = get_llm_client(current_user)
@@ -317,7 +382,13 @@ async def query_knowledge_base_stream(
                     current_user.id, request.session_id, "assistant", full_response
                 )
 
-            data = json.dumps({"source_chunks": source_chunk_contents}, ensure_ascii=False)
+            data = json.dumps(
+                {
+                    "source_chunks": source_chunk_contents,
+                    "sources": [source.model_dump(mode="json") for source in sources],
+                },
+                ensure_ascii=False,
+            )
             yield f"data: {data}\n\n"
             yield "data: [DONE]\n\n"
         except Exception as e:

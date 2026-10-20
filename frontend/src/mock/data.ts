@@ -21,10 +21,10 @@ const mockUser: User = {
 }
 
 const mockDocuments: Document[] = [
-  { id: 1, filename: '车险理赔服务流程.md', file_type: 'md', status: 'ready', chunks_count: 5, processing_task_id: null, error_message: null, created_at: daysAgo(2) },
-  { id: 2, filename: '百万医疗险产品条款.pdf', file_type: 'pdf', status: 'ready', chunks_count: 12, processing_task_id: null, error_message: null, created_at: daysAgo(1) },
-  { id: 3, filename: '退保客服话术.txt', file_type: 'txt', status: 'processing', chunks_count: 0, processing_task_id: 'task-abc', error_message: null, created_at: NOW },
-  { id: 4, filename: '知识更新管理规范.md', file_type: 'md', status: 'failed', chunks_count: 0, processing_task_id: null, error_message: '向量化失败：维度不匹配', created_at: daysAgo(3) },
+  { id: 1, filename: '车险理赔服务流程.md', file_type: 'md', business_line: '车险', product: '车损理赔', knowledge_version: 'v1.0', effective_at: daysAgo(30), folder_path: '车险/理赔', status: 'ready', chunks_count: 5, processing_task_id: null, error_message: null, created_at: daysAgo(2) },
+  { id: 2, filename: '百万医疗险产品条款.pdf', file_type: 'pdf', business_line: '健康险', product: '百万医疗险', knowledge_version: 'v2.1', effective_at: daysAgo(14), folder_path: '健康险/产品条款', status: 'ready', chunks_count: 12, processing_task_id: null, error_message: null, created_at: daysAgo(1) },
+  { id: 3, filename: '退保客服话术.txt', file_type: 'txt', business_line: '寿险', product: '保全服务', knowledge_version: 'v1.2', effective_at: NOW, folder_path: '人身险/保全服务', status: 'processing', chunks_count: 0, processing_task_id: 'task-abc', error_message: null, created_at: NOW },
+  { id: 4, filename: '知识更新管理规范.md', file_type: 'md', business_line: '客服运营', product: '知识库管理', knowledge_version: 'v1.0', effective_at: daysAgo(60), folder_path: '客服运营/知识管理', status: 'failed', chunks_count: 0, processing_task_id: null, error_message: '向量化失败：维度不匹配', created_at: daysAgo(3) },
 ]
 
 const mockTasks: Task[] = [

@@ -23,7 +23,20 @@ export interface Message {
   content: string
   reasoning?: string
   tool_calls?: ToolCall[]
+  sources?: KnowledgeSource[]
   timestamp: number
+}
+
+export interface KnowledgeSource {
+  document_id: number
+  chunk_index: number
+  filename: string
+  business_line: string | null
+  product: string | null
+  knowledge_version: string | null
+  effective_at: string | null
+  folder_path: string | null
+  excerpt: string
 }
 
 export interface ToolCall {
@@ -42,11 +55,20 @@ export interface Document {
   id: number
   filename: string
   file_type: string
+  business_line: string | null
+  product: string | null
+  knowledge_version: string | null
+  effective_at: string | null
+  folder_path: string | null
   status: 'queued' | 'processing' | 'ready' | 'failed'
   chunks_count: number
   processing_task_id: string | null
   error_message: string | null
   created_at: string
+}
+
+export interface DocumentDetail extends Document {
+  content: string
 }
 
 export interface Task {
@@ -166,4 +188,14 @@ export interface KnowledgeUpdateRead {
   knowledge_update_id: number
   user_id: number
   read_at: string
+}
+
+export interface KnowledgeUpdatePayload {
+  title: string
+  summary?: string | null
+  content: string
+  category: KnowledgeCategory
+  priority: KnowledgePriority
+  version?: string
+  effective_at?: string | null
 }

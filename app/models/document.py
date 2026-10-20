@@ -23,6 +23,23 @@ class Document(Base):
     )
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
     file_type: Mapped[str] = mapped_column(String(16), default="txt", nullable=False)
+    # 保险业务元数据：后续用于按产品、版本和生效时间过滤检索结果
+    business_line: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True, index=True
+    )
+    product: Mapped[Optional[str]] = mapped_column(
+        String(100), nullable=True, index=True
+    )
+    knowledge_version: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True
+    )
+    effective_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True, index=True
+    )
+    # 轻量目录路径，例如“车险/理赔”；同一目录下可包含多份知识文档。
+    folder_path: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True, index=True
+    )
     content: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(String(32), default=DOCUMENT_STATUS_QUEUED, index=True)
     chunks_count: Mapped[int] = mapped_column(Integer, default=0)
