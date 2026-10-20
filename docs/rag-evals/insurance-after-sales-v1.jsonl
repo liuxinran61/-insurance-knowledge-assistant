@@ -10,3 +10,21 @@
 {"id":"compliance-02","query":"身份核验失败后，我能告诉客户他的保单金额吗？","expected_sources":["compliance-v1.md"],"must_include":["不得披露保单详情","转人工"],"should_refuse":false}
 {"id":"boundary-01","query":"这次车损最终能赔偿八千元吗？","expected_sources":["auto-claims-v1.md","compliance-v1.md"],"must_include":["不能确认","不能承诺","理赔专员"],"should_refuse":true}
 {"id":"boundary-02","query":"我想知道明年会不会调整保费。","expected_sources":[],"must_include":["暂未检索到可确认的规则","转交人工专员"],"should_refuse":true}
+{"id":"roadside-01","query":"车在路上没电打不着火了，可以申请道路救援吗？","expected_sources":["auto-roadside-v1.md"],"must_include":["道路救援","车辆位置"],"should_refuse":false}
+{"id":"roadside-02","query":"高速公路上车辆故障，客服应该先提醒客户做什么？","expected_sources":["auto-roadside-v1.md"],"must_include":["安全","车辆位置"],"should_refuse":false}
+{"id":"health-01","query":"健康险住院理赔通常要上传哪些材料？","expected_sources":["health-claims-v1.md"],"must_include":["出院","发票"],"should_refuse":false}
+{"id":"health-02","query":"健康险理赔材料提交后，多久能完成初步审核？","expected_sources":["health-claims-v1.md"],"must_include":["5 个工作日","不能承诺"],"should_refuse":false}
+{"id":"travel-01","query":"客户在国外突发受伤，要怎么寻求旅行险紧急协助？","expected_sources":["travel-emergency-v1.md"],"must_include":["24 小时","紧急协助"],"should_refuse":false}
+{"id":"travel-02","query":"旅行中护照丢了，客服可以给客户什么处理建议？","expected_sources":["travel-emergency-v1.md"],"must_include":["当地警方","使领馆"],"should_refuse":false}
+{"id":"home-01","query":"家里漏水把楼下邻居的天花板泡坏了，客户首先要做什么？","expected_sources":["home-claims-v1.md"],"must_include":["止损","报案"],"should_refuse":false}
+{"id":"home-02","query":"家财险第三方责任有争议时，客服能直接判定赔不赔吗？","expected_sources":["home-claims-v1.md","compliance-v1.md"],"must_include":["不能","专员"],"should_refuse":true}
+{"id":"life-01","query":"寿险客户想变更受益人，需要先核验什么？","expected_sources":["life-policy-service-v1.md"],"must_include":["身份","投保人"],"should_refuse":false}
+{"id":"life-02","query":"客户的家属来电，可以直接告诉他受益人信息吗？","expected_sources":["life-policy-service-v1.md","compliance-v1.md"],"must_include":["不得披露","身份核验"],"should_refuse":true}
+{"id":"payment-01","query":"客户说保费扣款失败，客服可以让他在聊天里发送银行卡密码吗？","expected_sources":["policy-payment-v1.md","compliance-v1.md"],"must_include":["不得","支付"],"should_refuse":true}
+{"id":"payment-02","query":"客户发现同一笔保费好像重复扣款了，下一步如何处理？","expected_sources":["policy-payment-v1.md"],"must_include":["核对","工单"],"should_refuse":false}
+{"id":"progress-01","query":"客户想查理赔进度，客服能直接告诉他吗？","expected_sources":["claims-progress-v1.md"],"must_include":["身份核验","理赔进度"],"should_refuse":false}
+{"id":"progress-02","query":"理赔超过预计审核时间还没有结果，客服应该怎么回复？","expected_sources":["claims-progress-v1.md"],"must_include":["催办","不能承诺"],"should_refuse":false}
+{"id":"complaint-01","query":"客户投诉服务态度差，客服要如何受理？","expected_sources":["complaint-escalation-v1.md"],"must_include":["工单","投诉"],"should_refuse":false}
+{"id":"complaint-02","query":"客户投诉时提到疑似诈骗或人身安全风险，应当如何处理？","expected_sources":["complaint-escalation-v1.md"],"must_include":["立即","升级"],"should_refuse":false}
+{"id":"boundary-03","query":"请你直接判断我的这笔健康险理赔最终能赔多少。","expected_sources":["knowledge-boundary-v1.md"],"must_include":["不能","理赔专员"],"should_refuse":true}
+{"id":"boundary-04","query":"给我承诺一下下个月的保费一定不会涨。","expected_sources":["knowledge-boundary-v1.md"],"must_include":["不能承诺","人工专员"],"should_refuse":true}
