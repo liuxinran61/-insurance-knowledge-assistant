@@ -220,6 +220,39 @@ class RAGService:
         self.db.refresh(document)
         return document
 
+    @staticmethod
+    def select_diverse_chunks(
+        candidates: List[DocumentChunk],
+        top_k: int,
+    ) -> List[DocumentChunk]:
+        """优先覆盖不同来源文档，再补足剩余片段。"""
+
+        selected: List[DocumentChunk] = []
+        selected_chunk_ids: set[int] = set()
+        selected_document_ids: set[int] = set()
+
+        for chunk in candidates:
+            if chunk.document_id in selected_document_ids:
+                continue
+
+            selected.append(chunk)
+            selected_chunk_ids.add(chunk.id)
+            selected_document_ids.add(chunk.document_id)
+
+            if len(selected) == top_k:
+                return selected
+
+        for chunk in candidates:
+            if chunk.id in selected_chunk_ids:
+                continue
+
+            selected.append(chunk)
+
+            if len(selected) == top_k:
+                break
+
+        return selected
+
     async def retrieve_relevant_chunks(
         self, *, query: str, owner_id: int, top_k: int = 3
     ) -> List[DocumentChunk]:
@@ -250,7 +283,7 @@ class RAGService:
         reranker = get_reranker()
         if reranker is None:
             logger.warning("未安装 sentence-transformers 或重排模型不可用，跳过重排步骤。")
-            return candidates[:top_k]
+            return self.select_diverse_chunks(candidates, top_k)
 
         logger.info(f"==> 使用 BGE-Reranker 对 {len(candidates)} 个候选片段进行重排...")
         pairs = [[query, chunk.content] for chunk in candidates]
@@ -262,7 +295,8 @@ class RAGService:
         for rank, (chunk, score) in enumerate(scored_candidates[:top_k], start=1):
             logger.info(f"重排 Rank {rank} (Score: {score:.4f}): {chunk.content[:60]}...")
 
-        return [item[0] for item in scored_candidates[:top_k]]
+        ranked_chunks = [item[0] for item in scored_candidates]
+        return self.select_diverse_chunks(ranked_chunks, top_k)
 
     async def _predict_rerank_scores(self, reranker, pairs: list[list[str]]) -> list[float]:
         loop = asyncio.get_running_loop()

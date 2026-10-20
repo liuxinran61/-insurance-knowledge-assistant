@@ -1,0 +1,12 @@
+{"id":"claims-01","query":"车险发生剐蹭后，最晚多久要报案？","expected_sources":["auto-claims-v1.md"],"must_include":["48 小时"],"should_refuse":false}
+{"id":"claims-02","query":"车险理赔申请维修费需要准备哪些材料？","expected_sources":["auto-claims-v1.md"],"must_include":["驾驶证","行驶证","维修发票"],"should_refuse":false}
+{"id":"claims-03","query":"材料齐全后多久能审核完并赔钱？","expected_sources":["auto-claims-v1.md"],"must_include":["3 个工作日","初步审核","不能承诺具体赔付金额"],"should_refuse":false}
+{"id":"claims-04","query":"客户问这次事故一定能赔吗，我该怎么答？","expected_sources":["auto-claims-v1.md","compliance-v1.md"],"must_include":["不能判断是否一定赔付","转交理赔专员"],"should_refuse":false}
+{"id":"service-01","query":"客户要换绑定手机号，审核后什么时候生效？","expected_sources":["service-change-v1.md"],"must_include":["身份核验","即时生效"],"should_refuse":false}
+{"id":"service-02","query":"电子保单下载不了怎么办？","expected_sources":["service-change-v1.md"],"must_include":["身份核验","30 分钟","下载链接"],"should_refuse":false}
+{"id":"service-03","query":"犹豫期是几天？退款什么时候到账？","expected_sources":["service-change-v1.md"],"must_include":["15 个自然日","不得承诺","系统核算结果"],"should_refuse":false}
+{"id":"service-04","query":"客户质疑扣费不对，客服能直接处理吗？","expected_sources":["service-change-v1.md"],"must_include":["转人工专员"],"should_refuse":false}
+{"id":"compliance-01","query":"客户在聊天里发身份证和银行卡照片可以吗？","expected_sources":["compliance-v1.md"],"must_include":["不得","完整身份证号","银行卡号"],"should_refuse":false}
+{"id":"compliance-02","query":"身份核验失败后，我能告诉客户他的保单金额吗？","expected_sources":["compliance-v1.md"],"must_include":["不得披露保单详情","转人工"],"should_refuse":false}
+{"id":"boundary-01","query":"这次车损最终能赔偿八千元吗？","expected_sources":["auto-claims-v1.md","compliance-v1.md"],"must_include":["不能确认","不能承诺","理赔专员"],"should_refuse":true}
+{"id":"boundary-02","query":"我想知道明年会不会调整保费。","expected_sources":[],"must_include":["暂未检索到可确认的规则","转交人工专员"],"should_refuse":true}
