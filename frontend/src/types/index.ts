@@ -126,3 +126,44 @@ export interface LLMConfig {
   model_name?: string
   api_key?: string
 }
+
+export type KnowledgeCategory =
+  | 'product'
+  | 'claims'
+  | 'service'
+  | 'compliance'
+
+export type KnowledgePriority =
+  | 'normal'
+  | 'important'
+  | 'urgent'
+
+export type KnowledgeStatus =
+  | 'draft'
+  | 'published'
+  | 'archived'
+
+export interface KnowledgeUpdate {
+  id: number
+  title: string
+  summary: string | null
+  content: string
+  category: KnowledgeCategory
+  priority: KnowledgePriority
+  version: string
+  status: KnowledgeStatus
+  effective_at: string | null
+  published_at: string | null
+  created_by_id: number
+  created_at: string
+  updated_at: string
+  is_read: boolean
+  read_at: string | null
+}
+
+export interface KnowledgeUpdateRead {
+  id: number
+  knowledge_update_id: number
+  user_id: number
+  read_at: string
+}

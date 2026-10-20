@@ -12,6 +12,7 @@ import TasksPage from '@/pages/TasksPage'
 import SettingsPage from '@/pages/SettingsPage'
 import HealthPage from '@/pages/HealthPage'
 import ObservabilityPage from '@/pages/ObservabilityPage'
+import KnowledgeUpdatesPage from '@/pages/KnowledgeUpdatesPage'
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/knowledge-updates"
+                element={
+                    <ProtectedRoute>
+                    <KnowledgeUpdatesPage />
+                   </ProtectedRoute>
+                }
+            />
               <Route
                 path="/tasks"
                 element={

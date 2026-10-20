@@ -2,7 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
-import { IconSun, IconMoon, IconSearch, IconUser, IconLogout, IconSettings, IconMenu } from '@/components/ui/Icons'
+import {
+  IconSun, IconMoon, IconSearch, IconUser,
+  IconLogout, IconSettings, IconMenu, IconFile,
+} from '@/components/ui/Icons'
 
 export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const { user, logout } = useAuth()
@@ -55,6 +58,14 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => voi
         </div>
       </div>
 
+      <button
+        onClick={() => navigate('/knowledge-updates')}
+        className="flex items-center gap-1.5 px-2 py-2 rounded-lg text-[var(--text-secondary)] hover:text-brand-500 hover:bg-[var(--bg-tertiary)] transition-colors"
+        title="最新知识"
+       >
+        <IconFile />
+        <span className="hidden sm:block text-sm">最新知识</span>
+       </button>
       <div className="flex items-center gap-1">
         <button
           onClick={toggleTheme}
