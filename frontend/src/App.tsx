@@ -14,6 +14,7 @@ import HealthPage from '@/pages/HealthPage'
 import ObservabilityPage from '@/pages/ObservabilityPage'
 import KnowledgeUpdatesPage from '@/pages/KnowledgeUpdatesPage'
 import KnowledgeUpdateManagePage from '@/pages/KnowledgeUpdateManagePage'
+import KnowledgeOpsPage from '@/pages/KnowledgeOpsPage'
 function App() {
   return (
     <BrowserRouter>
@@ -68,6 +69,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <KnowledgeUpdateManagePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/knowledge-ops"
+                element={
+                  <ProtectedRoute>
+                    <KnowledgeOpsPage />
                   </ProtectedRoute>
                 }
               />

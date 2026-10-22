@@ -200,3 +200,17 @@ export interface KnowledgeUpdatePayload {
   version?: string
   effective_at?: string | null
 }
+
+export interface KnowledgeOpsStep {
+  step_id: string
+  task: string
+  tool_name: string
+  result: Record<string, unknown>
+}
+
+export interface KnowledgeOpsRunResult {
+  session_id: string
+  response: string
+  steps: KnowledgeOpsStep[]
+  errors: string[]
+}

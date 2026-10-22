@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import {
   IconSun, IconMoon, IconSearch, IconUser,
-  IconLogout, IconSettings, IconMenu, IconFile,
+  IconLogout, IconSettings, IconMenu, IconFile, IconActivity,
 } from '@/components/ui/Icons'
 
 export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
@@ -111,6 +111,15 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => voi
                 >
                   <IconFile />
                   知识更新管理
+                </button>
+              )}
+              {user?.is_superuser && (
+                <button
+                  onClick={() => { setMenuOpen(false); navigate('/knowledge-ops') }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                >
+                  <IconActivity />
+                  知识运营巡检
                 </button>
               )}
               <button

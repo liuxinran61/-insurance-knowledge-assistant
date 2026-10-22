@@ -16,6 +16,7 @@ from app.api.routers import (
     chat,
     health,
     knowledge_updates,
+    knowledge_ops,
     observability,
     rag,
     tasks,
@@ -210,7 +211,11 @@ app.include_router(
     prefix="/api/v1/knowledge-updates",
     tags=["Knowledge Updates"],
 )
-
+app.include_router(
+    knowledge_ops.router,
+    prefix="/api/v1/knowledge-ops",
+    tags=["Knowledge Operations"],
+)
 
 # 挂载前端静态文件目录
 # 优先使用 app/static/（Docker 镜像构建产物），其次使用 frontend/dist/（开发模式）
