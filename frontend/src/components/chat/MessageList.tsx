@@ -13,6 +13,9 @@ interface MessageListProps {
 
 export default function MessageList({ messages, isStreaming, onQuickAsk }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const activeAssistantMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === 'assistant')
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -28,10 +31,10 @@ export default function MessageList({ messages, isStreaming, onQuickAsk }: Messa
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
         ))}
-        {isStreaming && (
+        {isStreaming && !activeAssistantMessage?.activity && (
           <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-            正在思考...
+            正在输出回答…
           </div>
         )}
         <div ref={bottomRef} />
@@ -64,6 +67,12 @@ function MessageBubble({ message }: { message: Message }) {
         <span className="text-white text-xs font-bold">保</span>
       </div>
       <div className="flex-1 min-w-0 space-y-3">
+        {message.activity && (
+          <div className="flex items-center gap-2 text-xs text-brand-600 dark:text-brand-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-500 animate-pulse" />
+            {message.activity}
+          </div>
+        )}
         {message.reasoning && (
           <ReasoningBlock content={message.reasoning} />
         )}
@@ -80,7 +89,7 @@ function MessageBubble({ message }: { message: Message }) {
         {message.sources && message.sources.length > 0 && (
           <div className="border-t border-[var(--border-primary)] pt-3">
             <p className="mb-2 text-xs font-medium text-[var(--text-tertiary)]">
-              参考资料（{message.sources.length}）
+              回答依据（{message.sources.length}）
             </p>
             <div className="space-y-2">
               {message.sources.map((source) => (

@@ -298,7 +298,7 @@ async def query_knowledge_base(
         raise HTTPException(status_code=500, detail=f"RAG query failed: {str(e)}")
 
 
-@router.post("/query/stream", summary="基于知识库检索并流式回答 (SSE)", tags=["RAG"])
+@router.post("/query/stream", summary="基于 Agent 的流式知识问答 (SSE)", tags=["RAG"])
 async def query_knowledge_base_stream(
     request: RAGQueryRequest,
     db: Session = Depends(get_db),
@@ -307,92 +307,95 @@ async def query_knowledge_base_stream(
     if not request.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
 
-    rag_service = RAGService(db)
-    chunks = await rag_service.retrieve_relevant_chunks(
-        query=request.query,
-        owner_id=current_user.id,
-        top_k=request.top_k,
-        business_line=request.business_line,
-        product=request.product,
-        as_of=request.as_of,
-        document_id=request.document_id,
-        folder_path=request.folder_path,
-    )
-
-    if not chunks:
-
-        async def _empty():
-            data = json.dumps(
-                {
-                    "content": "知识库中暂无已处理完成的相关文档，请先上传文档并等待处理完成。",
-                    "source_chunks": [],
-                    "sources": [],
-                },
-                ensure_ascii=False,
-            )
-            yield f"data: {data}\n\n"
-            yield "data: [DONE]\n\n"
-
-        return StreamingResponse(_empty(), media_type="text/event-stream")
-
-    context_str = build_context_text(chunks)
-    system_prompt = (
-        "你是一个专业的问答助手。请基于以下提供的参考资料，准确回答用户的问题。\n"
-        "如果你不知道答案，或者参考资料中没有相关信息，请直接说明，不要编造。\n\n"
-        f"=== 参考资料 ===\n{context_str}\n=== 结束 ==="
-    )
-
-    source_chunk_contents = [chunk.content for chunk in chunks]
-    sources = build_source_references(chunks)
-
     async def _stream():
-        llm_info = get_llm_client(current_user)
-        full_response = ""
-
-        stream_messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": request.query},
-        ]
-
-        if request.session_id:
-            session_history = await load_session_history(current_user.id, request.session_id)
-            await append_session_message(current_user.id, request.session_id, "user", request.query)
-            stream_messages = (
-                [{"role": "system", "content": system_prompt}]
-                + session_history
-                + [{"role": "user", "content": request.query}]
-            )
-
+        rag_service = RAGService(db)
+        started_at = start_timer()
+        answer = ""
         try:
-            response = await llm_info.client.chat.completions.create(
-                model=llm_info.model_name,
-                messages=stream_messages,
-                temperature=0.1,
-                stream=True,
-            )
-            async for chunk in response:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    content = chunk.choices[0].delta.content
-                    full_response += content
-                    data = json.dumps({"content": content}, ensure_ascii=False)
-                    yield f"data: {data}\n\n"
+            history = None
+            if request.session_id:
+                history = await load_session_history(current_user.id, request.session_id)
 
-            if request.session_id and full_response:
-                await append_session_message(
-                    current_user.id, request.session_id, "assistant", full_response
-                )
+            async for event in KnowledgeAgent(rag_service).stream(
+                query=request.query,
+                owner_id=current_user.id,
+                history=history,
+                business_line=request.business_line,
+                product=request.product,
+                as_of=request.as_of,
+                document_id=request.document_id,
+                folder_path=request.folder_path,
+            ):
+                if event["type"] == "content":
+                    answer += event["content"]
 
-            data = json.dumps(
-                {
-                    "source_chunks": source_chunk_contents,
-                    "sources": [source.model_dump(mode="json") for source in sources],
-                },
-                ensure_ascii=False,
-            )
-            yield f"data: {data}\n\n"
+                if event["type"] == "done":
+                    sources = [
+                        SourceReference(
+                            document_id=source["document_id"],
+                            chunk_index=source["chunk_index"],
+                            filename=source["filename"],
+                            folder_path=source.get("folder_path"),
+                            product=source.get("product"),
+                            knowledge_version=source.get("knowledge_version"),
+                            effective_at=source.get("effective_at"),
+                            excerpt=source["content"][:300].strip(),
+                        ).model_dump(mode="json")
+                        for source in event["sources"]
+                    ]
+
+                    answer = event["answer"]
+                    if request.session_id:
+                        await append_session_message(
+                            current_user.id, request.session_id, "user", request.query
+                        )
+                        await append_session_message(
+                            current_user.id, request.session_id, "assistant", answer
+                        )
+
+                    create_llm_call_log(
+                        db,
+                        user_id=current_user.id,
+                        endpoint="/api/v1/rag/query/stream",
+                        prompt=request.query,
+                        response=answer,
+                        tool_calls=(
+                            json.dumps(event["tool_calls"], ensure_ascii=False)
+                            if event["tool_calls"]
+                            else None
+                        ),
+                        prompt_tokens=event["prompt_tokens"],
+                        completion_tokens=event["completion_tokens"],
+                        total_tokens=event["total_tokens"],
+                        latency_ms=elapsed_ms(started_at),
+                        status="success",
+                    )
+                    event = {"type": "sources", "sources": sources}
+
+                data = json.dumps(event, ensure_ascii=False)
+                yield f"data: {data}\n\n"
+
             yield "data: [DONE]\n\n"
-        except Exception as e:
-            data = json.dumps({"error": str(e)}, ensure_ascii=False)
+        except Exception as error:
+            create_llm_call_log(
+                db,
+                user_id=current_user.id,
+                endpoint="/api/v1/rag/query/stream",
+                prompt=request.query,
+                response=answer or None,
+                tool_calls=None,
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+                latency_ms=elapsed_ms(started_at),
+                status="failed",
+                error_message=str(error),
+            )
+            data = json.dumps({"type": "error", "error": str(error)}, ensure_ascii=False)
             yield f"data: {data}\n\n"
 
-    return StreamingResponse(_stream(), media_type="text/event-stream")
+    return StreamingResponse(
+        _stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )

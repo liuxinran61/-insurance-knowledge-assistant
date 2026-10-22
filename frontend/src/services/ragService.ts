@@ -25,6 +25,16 @@ export interface KnowledgeQueryResult {
   sources: SourceReference[]
 }
 
+export interface KnowledgeStreamEvent {
+  type?: 'status' | 'tool' | 'content' | 'content_reset' | 'sources' | 'done' | 'error'
+  message?: string
+  name?: string
+  arguments?: Record<string, unknown>
+  content?: string
+  sources?: SourceReference[]
+  error?: string
+}
+
 function buildQueryPayload(
   query: string,
   topK: number,
@@ -111,12 +121,7 @@ export async function* streamQueryKnowledgeBase(
   topK = 3,
   filters: KnowledgeQueryFilters = {},
   sessionId?: string,
-): AsyncGenerator<{
-  content?: string
-  source_chunks?: string[]
-  sources?: SourceReference[]
-  error?: string
-}> {
+): AsyncGenerator<KnowledgeStreamEvent> {
   const token = localStorage.getItem('agent_token')
   const baseUrl = import.meta.env.VITE_API_BASE || '/api/v1'
   const url = `${baseUrl}/rag/query/stream`

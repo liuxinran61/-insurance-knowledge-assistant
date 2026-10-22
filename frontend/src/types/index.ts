@@ -22,6 +22,7 @@ export interface Message {
   role: 'user' | 'assistant' | 'system'
   content: string
   reasoning?: string
+  activity?: string
   tool_calls?: ToolCall[]
   sources?: KnowledgeSource[]
   timestamp: number
@@ -41,7 +42,7 @@ export interface KnowledgeSource {
 
 export interface ToolCall {
   name: string
-  arguments: Record<string, string>
+  arguments: Record<string, unknown>
   result?: string
 }
 
