@@ -1,7 +1,7 @@
 import asyncio
 import json
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
@@ -43,9 +43,26 @@ def _get_embedding_client() -> AsyncOpenAI:
 
 def get_reranker():
     global _reranker
-    if CrossEncoder is not None and _reranker is None:
-        logger.info("==> 正在加载 BGE-Reranker 模型，这可能需要一点时间...")
-        _reranker = CrossEncoder("BAAI/bge-reranker-base", max_length=512)
+
+    if not settings.RERANKER_ENABLED:
+        return None
+
+    if CrossEncoder is None:
+        logger.warning(
+            "sentence-transformers 未安装，跳过重排步骤。"
+        )
+        return None
+
+    if _reranker is None:
+        logger.info(
+            f"==> 正在加载 Reranker 模型："
+            f"{settings.RERANKER_MODEL_NAME}"
+        )
+        _reranker = CrossEncoder(
+            settings.RERANKER_MODEL_NAME,
+            max_length=settings.RERANKER_MAX_LENGTH,
+        )
+
     return _reranker
 
 
@@ -280,7 +297,11 @@ class RAGService:
         as_of: Optional[datetime] = None,
         document_id: Optional[int] = None,
         folder_path: Optional[str] = None,
-    ) -> List[DocumentChunk]:
+        include_distances: bool = False,
+    ) -> Union[
+        List[DocumentChunk],
+        List[Tuple[DocumentChunk, float]],
+    ]:
         """根据 query 和业务元数据检索相关的 DocumentChunks。"""
         if not self.has_ready_documents(owner_id=owner_id):
             return []
@@ -307,8 +328,12 @@ class RAGService:
         if folder_path:
             filters.append(Document.folder_path == folder_path)
 
+        distance = DocumentChunk.embedding.cosine_distance(
+            query_vector
+        ).label("cosine_distance")
+
         stmt = (
-            select(DocumentChunk)
+            select(DocumentChunk, distance)
             .join(Document, DocumentChunk.document_id == Document.id)
             .where(*filters)
             .order_by(DocumentChunk.embedding.cosine_distance(query_vector))
@@ -316,15 +341,33 @@ class RAGService:
         )
 
         result = self.db.execute(stmt)
-        candidates = result.scalars().all()
+        rows = result.all()
+        candidates = [chunk for chunk, _ in rows]
+        distance_by_chunk_id = {
+            chunk.id: float(chunk_distance)
+            for chunk, chunk_distance in rows
+        }
         if not candidates:
+            return []
+
+        best_distance = min(distance_by_chunk_id.values())
+        if best_distance > settings.RETRIEVAL_MAX_COSINE_DISTANCE:
+            logger.info(
+                f"检索拒答：最佳余弦距离 {best_distance:.4f} "
+                f"超过阈值 "
+                f"{settings.RETRIEVAL_MAX_COSINE_DISTANCE:.4f}。"
+            )
             return []
 
         reranker = get_reranker()
         if reranker is None:
-            logger.warning("未安装 sentence-transformers 或重排模型不可用，跳过重排步骤。")
-            return self.select_diverse_chunks(candidates, top_k)
-
+            selected_chunks = self.select_diverse_chunks(candidates, top_k)
+            if include_distances:
+                return [
+                    (chunk, distance_by_chunk_id[chunk.id])
+                    for chunk in selected_chunks
+                ]
+            return selected_chunks
         logger.info(f"==> 使用 BGE-Reranker 对 {len(candidates)} 个候选片段进行重排...")
         pairs = [[query, chunk.content] for chunk in candidates]
         scores = await self._predict_rerank_scores(reranker, pairs)
@@ -336,7 +379,14 @@ class RAGService:
             logger.info(f"重排 Rank {rank} (Score: {score:.4f}): {chunk.content[:60]}...")
 
         ranked_chunks = [item[0] for item in scored_candidates]
-        return self.select_diverse_chunks(ranked_chunks, top_k)
+        selected_chunks = self.select_diverse_chunks(ranked_chunks, top_k)
+
+        if include_distances:
+            return [
+                (chunk, distance_by_chunk_id[chunk.id])
+                for chunk in selected_chunks
+            ]
+        return selected_chunks
 
     async def _predict_rerank_scores(self, reranker, pairs: list[list[str]]) -> list[float]:
         loop = asyncio.get_running_loop()

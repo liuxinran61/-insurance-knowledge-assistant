@@ -49,6 +49,10 @@ class Settings(BaseSettings):
 
     # RAG 配置
     EMBEDDING_DIMENSION: int = 1024
+    RERANKER_ENABLED: bool = True
+    RERANKER_MODEL_NAME: str = "BAAI/bge-reranker-base"
+    RERANKER_MAX_LENGTH: int = 512
+    RETRIEVAL_MAX_COSINE_DISTANCE: float = 0.45
 
     @model_validator(mode="after")
     def _auto_enable_mock(self) -> "Settings":
