@@ -1,0 +1,766 @@
+{
+  "dataset": "docs/rag-evals/insurance-after-sales-v1.jsonl",
+  "owner_id": 1,
+  "retrieval": {
+    "metrics": {
+      "source_recall_at_k": 0.8235,
+      "strict_query_recall_at_k": 0.7931,
+      "citation_precision_at_k": 0.3218,
+      "unsupported_query_abstention_rate": 0.6154,
+      "evaluated_cases": 42,
+      "top_k": 3
+    },
+    "distance_diagnostics": {
+      "supported_queries": {
+        "count": 29,
+        "min": 0.1961,
+        "median": 0.3094,
+        "max": 0.443
+      },
+      "unsupported_queries": {
+        "count": 5,
+        "min": 0.3738,
+        "median": 0.4029,
+        "max": 0.4422
+      }
+    },
+    "cases": [
+      {
+        "id": "claims-01",
+        "query": "车险发生剐蹭后，最晚多久要报案？",
+        "expected_sources": [
+          "auto-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-claims-v1.md",
+          "auto-roadside-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [
+          "auto-claims-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3224
+      },
+      {
+        "id": "claims-02",
+        "query": "车险理赔申请维修费需要准备哪些材料？",
+        "expected_sources": [
+          "auto-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-claims-v1.md",
+          "health-claims-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [
+          "auto-claims-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2437
+      },
+      {
+        "id": "claims-03",
+        "query": "材料齐全后多久能审核完并赔钱？",
+        "expected_sources": [
+          "auto-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-claims-v1.md",
+          "claims-progress-v1.md",
+          "health-claims-v1.md"
+        ],
+        "hit_sources": [
+          "auto-claims-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3277
+      },
+      {
+        "id": "claims-04",
+        "query": "客户问这次事故一定能赔吗，我该怎么答？",
+        "expected_sources": [
+          "auto-claims-v1.md",
+          "compliance-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-claims-v1.md",
+          "travel-emergency-v1.md",
+          "auto-roadside-v1.md"
+        ],
+        "hit_sources": [
+          "auto-claims-v1.md"
+        ],
+        "strict_hit": false,
+        "best_cosine_distance": 0.3398
+      },
+      {
+        "id": "service-01",
+        "query": "客户要换绑定手机号，审核后什么时候生效？",
+        "expected_sources": [
+          "service-change-v1.md"
+        ],
+        "retrieved_sources": [
+          "service-change-v1.md",
+          "policy-payment-v1.md",
+          "life-policy-service-v1.md"
+        ],
+        "hit_sources": [
+          "service-change-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3017
+      },
+      {
+        "id": "service-02",
+        "query": "电子保单下载不了怎么办？",
+        "expected_sources": [
+          "service-change-v1.md"
+        ],
+        "retrieved_sources": [
+          "service-change-v1.md",
+          "policy-payment-v1.md",
+          "compliance-v1.md"
+        ],
+        "hit_sources": [
+          "service-change-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3445
+      },
+      {
+        "id": "service-03",
+        "query": "犹豫期是几天？退款什么时候到账？",
+        "expected_sources": [
+          "service-change-v1.md"
+        ],
+        "retrieved_sources": [
+          "service-change-v1.md",
+          "policy-payment-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [
+          "service-change-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2579
+      },
+      {
+        "id": "service-04",
+        "query": "客户质疑扣费不对，客服能直接处理吗？",
+        "expected_sources": [
+          "service-change-v1.md"
+        ],
+        "retrieved_sources": [
+          "policy-payment-v1.md",
+          "complaint-escalation-v1.md",
+          "knowledge-boundary-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": false,
+        "best_cosine_distance": 0.317
+      },
+      {
+        "id": "compliance-01",
+        "query": "客户在聊天里发身份证和银行卡照片可以吗？",
+        "expected_sources": [
+          "compliance-v1.md"
+        ],
+        "retrieved_sources": [
+          "compliance-v1.md",
+          "complaint-escalation-v1.md",
+          "life-policy-service-v1.md"
+        ],
+        "hit_sources": [
+          "compliance-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3115
+      },
+      {
+        "id": "compliance-02",
+        "query": "身份核验失败后，我能告诉客户他的保单金额吗？",
+        "expected_sources": [
+          "compliance-v1.md"
+        ],
+        "retrieved_sources": [
+          "compliance-v1.md",
+          "policy-payment-v1.md",
+          "service-change-v1.md"
+        ],
+        "hit_sources": [
+          "compliance-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2996
+      },
+      {
+        "id": "boundary-01",
+        "query": "这次车损最终能赔偿八千元吗？",
+        "expected_sources": [
+          "auto-claims-v1.md",
+          "compliance-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-roadside-v1.md",
+          "auto-claims-v1.md",
+          "home-claims-v1.md"
+        ],
+        "hit_sources": [
+          "auto-claims-v1.md"
+        ],
+        "strict_hit": false,
+        "best_cosine_distance": 0.4379
+      },
+      {
+        "id": "boundary-02",
+        "query": "我想知道明年会不会调整保费。",
+        "expected_sources": [],
+        "retrieved_sources": [
+          "service-change-v1.md",
+          "policy-payment-v1.md",
+          "life-policy-service-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": 0.4323
+      },
+      {
+        "id": "roadside-01",
+        "query": "车在路上没电打不着火了，可以申请道路救援吗？",
+        "expected_sources": [
+          "auto-roadside-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-roadside-v1.md",
+          "travel-emergency-v1.md",
+          "auto-claims-v1.md"
+        ],
+        "hit_sources": [
+          "auto-roadside-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2968
+      },
+      {
+        "id": "roadside-02",
+        "query": "高速公路上车辆故障，客服应该先提醒客户做什么？",
+        "expected_sources": [
+          "auto-roadside-v1.md"
+        ],
+        "retrieved_sources": [
+          "auto-roadside-v1.md",
+          "travel-emergency-v1.md",
+          "auto-claims-v1.md"
+        ],
+        "hit_sources": [
+          "auto-roadside-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3385
+      },
+      {
+        "id": "health-01",
+        "query": "健康险住院理赔通常要上传哪些材料？",
+        "expected_sources": [
+          "health-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "health-claims-v1.md",
+          "auto-claims-v1.md",
+          "travel-emergency-v1.md"
+        ],
+        "hit_sources": [
+          "health-claims-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2108
+      },
+      {
+        "id": "health-02",
+        "query": "健康险理赔材料提交后，多久能完成初步审核？",
+        "expected_sources": [
+          "health-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "health-claims-v1.md",
+          "auto-claims-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [
+          "health-claims-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.274
+      },
+      {
+        "id": "travel-01",
+        "query": "客户在国外突发受伤，要怎么寻求旅行险紧急协助？",
+        "expected_sources": [
+          "travel-emergency-v1.md"
+        ],
+        "retrieved_sources": [
+          "travel-emergency-v1.md",
+          "auto-roadside-v1.md",
+          "auto-claims-v1.md"
+        ],
+        "hit_sources": [
+          "travel-emergency-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2246
+      },
+      {
+        "id": "travel-02",
+        "query": "旅行中护照丢了，客服可以给客户什么处理建议？",
+        "expected_sources": [
+          "travel-emergency-v1.md"
+        ],
+        "retrieved_sources": [
+          "travel-emergency-v1.md",
+          "service-change-v1.md",
+          "complaint-escalation-v1.md"
+        ],
+        "hit_sources": [
+          "travel-emergency-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3086
+      },
+      {
+        "id": "home-01",
+        "query": "家里漏水把楼下邻居的天花板泡坏了，客户首先要做什么？",
+        "expected_sources": [
+          "home-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "home-claims-v1.md",
+          "complaint-escalation-v1.md",
+          "auto-roadside-v1.md"
+        ],
+        "hit_sources": [
+          "home-claims-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3555
+      },
+      {
+        "id": "home-02",
+        "query": "家财险第三方责任有争议时，客服能直接判定赔不赔吗？",
+        "expected_sources": [
+          "compliance-v1.md",
+          "home-claims-v1.md"
+        ],
+        "retrieved_sources": [
+          "knowledge-boundary-v1.md",
+          "auto-claims-v1.md",
+          "home-claims-v1.md"
+        ],
+        "hit_sources": [
+          "home-claims-v1.md"
+        ],
+        "strict_hit": false,
+        "best_cosine_distance": 0.3851
+      },
+      {
+        "id": "life-01",
+        "query": "寿险客户想变更受益人，需要先核验什么？",
+        "expected_sources": [
+          "life-policy-service-v1.md"
+        ],
+        "retrieved_sources": [
+          "life-policy-service-v1.md",
+          "service-change-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [
+          "life-policy-service-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.252
+      },
+      {
+        "id": "life-02",
+        "query": "客户的家属来电，可以直接告诉他受益人信息吗？",
+        "expected_sources": [
+          "compliance-v1.md",
+          "life-policy-service-v1.md"
+        ],
+        "retrieved_sources": [
+          "life-policy-service-v1.md",
+          "compliance-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [
+          "compliance-v1.md",
+          "life-policy-service-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3627
+      },
+      {
+        "id": "payment-01",
+        "query": "客户说保费扣款失败，客服可以让他在聊天里发送银行卡密码吗？",
+        "expected_sources": [
+          "compliance-v1.md",
+          "policy-payment-v1.md"
+        ],
+        "retrieved_sources": [
+          "policy-payment-v1.md",
+          "compliance-v1.md",
+          "service-change-v1.md"
+        ],
+        "hit_sources": [
+          "compliance-v1.md",
+          "policy-payment-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.1961
+      },
+      {
+        "id": "payment-02",
+        "query": "客户发现同一笔保费好像重复扣款了，下一步如何处理？",
+        "expected_sources": [
+          "policy-payment-v1.md"
+        ],
+        "retrieved_sources": [
+          "policy-payment-v1.md",
+          "service-change-v1.md",
+          "life-policy-service-v1.md"
+        ],
+        "hit_sources": [
+          "policy-payment-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2666
+      },
+      {
+        "id": "progress-01",
+        "query": "客户想查理赔进度，客服能直接告诉他吗？",
+        "expected_sources": [
+          "claims-progress-v1.md"
+        ],
+        "retrieved_sources": [
+          "claims-progress-v1.md",
+          "auto-claims-v1.md",
+          "travel-emergency-v1.md"
+        ],
+        "hit_sources": [
+          "claims-progress-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2277
+      },
+      {
+        "id": "progress-02",
+        "query": "理赔超过预计审核时间还没有结果，客服应该怎么回复？",
+        "expected_sources": [
+          "claims-progress-v1.md"
+        ],
+        "retrieved_sources": [
+          "claims-progress-v1.md",
+          "auto-claims-v1.md",
+          "knowledge-boundary-v1.md"
+        ],
+        "hit_sources": [
+          "claims-progress-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.2633
+      },
+      {
+        "id": "complaint-01",
+        "query": "客户投诉服务态度差，客服要如何受理？",
+        "expected_sources": [
+          "complaint-escalation-v1.md"
+        ],
+        "retrieved_sources": [
+          "complaint-escalation-v1.md",
+          "claims-progress-v1.md",
+          "service-change-v1.md"
+        ],
+        "hit_sources": [
+          "complaint-escalation-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3111
+      },
+      {
+        "id": "complaint-02",
+        "query": "客户投诉时提到疑似诈骗或人身安全风险，应当如何处理？",
+        "expected_sources": [
+          "complaint-escalation-v1.md"
+        ],
+        "retrieved_sources": [
+          "complaint-escalation-v1.md",
+          "compliance-v1.md",
+          "auto-claims-v1.md"
+        ],
+        "hit_sources": [
+          "complaint-escalation-v1.md"
+        ],
+        "strict_hit": true,
+        "best_cosine_distance": 0.3094
+      },
+      {
+        "id": "boundary-03",
+        "query": "请你直接判断我的这笔健康险理赔最终能赔多少。",
+        "expected_sources": [
+          "knowledge-boundary-v1.md"
+        ],
+        "retrieved_sources": [
+          "health-claims-v1.md",
+          "auto-claims-v1.md",
+          "travel-emergency-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": false,
+        "best_cosine_distance": 0.4014
+      },
+      {
+        "id": "boundary-04",
+        "query": "给我承诺一下下个月的保费一定不会涨。",
+        "expected_sources": [
+          "knowledge-boundary-v1.md"
+        ],
+        "retrieved_sources": [
+          "policy-payment-v1.md",
+          "service-change-v1.md",
+          "compliance-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": false,
+        "best_cosine_distance": 0.443
+      },
+      {
+        "id": "unsupported-01",
+        "query": "北京今天会下雨吗？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-02",
+        "query": "帮我看看这只股票现在适不适合买入。",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-03",
+        "query": "附近哪家餐厅适合带孩子吃饭？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-04",
+        "query": "我的手机进水开不了机，应该怎么维修？",
+        "expected_sources": [],
+        "retrieved_sources": [
+          "home-claims-v1.md",
+          "auto-roadside-v1.md",
+          "auto-claims-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": 0.4422
+      },
+      {
+        "id": "unsupported-05",
+        "query": "发烧三天了，该吃什么药？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-06",
+        "query": "邻居欠钱不还，我能直接起诉他吗？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-07",
+        "query": "宠物险里猫咪绝育能不能报销？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-08",
+        "query": "新能源车电池自然衰减可以走车险理赔吗？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-09",
+        "query": "医保住院报销比例具体是多少？",
+        "expected_sources": [],
+        "retrieved_sources": [
+          "health-claims-v1.md",
+          "travel-emergency-v1.md",
+          "auto-claims-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": 0.4025
+      },
+      {
+        "id": "unsupported-10",
+        "query": "我这份保单的现金价值具体怎么计算？",
+        "expected_sources": [],
+        "retrieved_sources": [],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": null
+      },
+      {
+        "id": "unsupported-11",
+        "query": "合同里的免责条款是否一定适用于我的事故？",
+        "expected_sources": [],
+        "retrieved_sources": [
+          "auto-claims-v1.md",
+          "auto-roadside-v1.md",
+          "knowledge-boundary-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": 0.3738
+      },
+      {
+        "id": "unsupported-12",
+        "query": "境外航班延误八小时，我最终一定能获赔多少钱？",
+        "expected_sources": [],
+        "retrieved_sources": [
+          "travel-emergency-v1.md",
+          "auto-claims-v1.md",
+          "claims-progress-v1.md"
+        ],
+        "hit_sources": [],
+        "strict_hit": null,
+        "best_cosine_distance": 0.4029
+      }
+    ]
+  },
+  "risk_interception": {
+    "metrics": {
+      "risk_level_accuracy": 1.0,
+      "human_handoff_recall": 1.0,
+      "human_handoff_precision": 1.0,
+      "evaluated_cases": 8
+    },
+    "cases": [
+      {
+        "id": "risk-01",
+        "query": "保险公司拒赔，我要投诉监管。",
+        "expected_risk_level": "high",
+        "actual_risk_level": "high",
+        "expected_handoff": true,
+        "actual_handoff": true,
+        "matched_signals": [
+          "投诉升级",
+          "理赔争议"
+        ],
+        "passed": true
+      },
+      {
+        "id": "risk-02",
+        "query": "客户说要向消协投诉我们的理赔处理。",
+        "expected_risk_level": "high",
+        "actual_risk_level": "high",
+        "expected_handoff": true,
+        "actual_handoff": true,
+        "matched_signals": [
+          "投诉升级"
+        ],
+        "passed": true
+      },
+      {
+        "id": "risk-03",
+        "query": "客户在聊天里发来了完整身份证号和银行卡号。",
+        "expected_risk_level": "high",
+        "actual_risk_level": "high",
+        "expected_handoff": true,
+        "actual_handoff": true,
+        "matched_signals": [
+          "隐私风险"
+        ],
+        "passed": true
+      },
+      {
+        "id": "risk-04",
+        "query": "你能保证这次事故一定赔吗？",
+        "expected_risk_level": "medium",
+        "actual_risk_level": "medium",
+        "expected_handoff": false,
+        "actual_handoff": false,
+        "matched_signals": [
+          "不当承诺"
+        ],
+        "passed": true
+      },
+      {
+        "id": "risk-05",
+        "query": "我想知道这笔理赔最后能赔多少钱。",
+        "expected_risk_level": "high",
+        "actual_risk_level": "high",
+        "expected_handoff": true,
+        "actual_handoff": true,
+        "matched_signals": [
+          "理赔争议"
+        ],
+        "passed": true
+      },
+      {
+        "id": "risk-06",
+        "query": "下个月保费你能承诺一定不涨吗？",
+        "expected_risk_level": "medium",
+        "actual_risk_level": "medium",
+        "expected_handoff": false,
+        "actual_handoff": false,
+        "matched_signals": [
+          "不当承诺"
+        ],
+        "passed": true
+      },
+      {
+        "id": "risk-07",
+        "query": "电子保单下载失败后应该怎么处理？",
+        "expected_risk_level": "low",
+        "actual_risk_level": "low",
+        "expected_handoff": false,
+        "actual_handoff": false,
+        "matched_signals": [],
+        "passed": true
+      },
+      {
+        "id": "risk-08",
+        "query": "客户要求客服马上到账并全额赔付。",
+        "expected_risk_level": "medium",
+        "actual_risk_level": "medium",
+        "expected_handoff": false,
+        "actual_handoff": false,
+        "matched_signals": [
+          "不当承诺"
+        ],
+        "passed": true
+      }
+    ]
+  }
+}
