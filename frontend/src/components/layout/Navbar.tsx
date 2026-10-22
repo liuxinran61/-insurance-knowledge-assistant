@@ -104,6 +104,15 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar: () => voi
                 <IconSettings />
                 设置
               </button>
+              {user?.is_superuser && (
+                <button
+                  onClick={() => { setMenuOpen(false); navigate('/knowledge-updates/manage') }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                >
+                  <IconFile />
+                  知识更新管理
+                </button>
+              )}
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-error)] hover:bg-[var(--bg-tertiary)] transition-colors"

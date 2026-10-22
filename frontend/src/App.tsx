@@ -13,7 +13,7 @@ import SettingsPage from '@/pages/SettingsPage'
 import HealthPage from '@/pages/HealthPage'
 import ObservabilityPage from '@/pages/ObservabilityPage'
 import KnowledgeUpdatesPage from '@/pages/KnowledgeUpdatesPage'
-
+import KnowledgeUpdateManagePage from '@/pages/KnowledgeUpdateManagePage'
 function App() {
   return (
     <BrowserRouter>
@@ -58,11 +58,19 @@ function App() {
               <Route
                 path="/knowledge-updates"
                 element={
-                    <ProtectedRoute>
+                  <ProtectedRoute>
                     <KnowledgeUpdatesPage />
-                   </ProtectedRoute>
+                  </ProtectedRoute>
                 }
-            />
+              />
+              <Route
+                path="/knowledge-updates/manage"
+                element={
+                  <ProtectedRoute>
+                    <KnowledgeUpdateManagePage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/tasks"
                 element={

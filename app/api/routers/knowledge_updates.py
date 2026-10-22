@@ -51,6 +51,25 @@ async def list_published_knowledge_updates(
     )
 
 
+@router.get(
+    "/admin",
+    response_model=List[KnowledgeUpdateOut],
+    summary="管理员获取全部知识更新",
+)
+async def list_all_knowledge_updates_for_admin(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(get_current_active_superuser),
+):
+    """管理员查看草稿、已发布和已归档的全部知识更新。"""
+
+    return KnowledgeUpdateService.list_all_for_admin(
+        db=db,
+        skip=skip,
+        limit=limit,
+    )
+
 @router.post(
     "/",
     response_model=KnowledgeUpdateOut,

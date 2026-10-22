@@ -85,7 +85,6 @@ class KnowledgeUpdateService:
 
         update_data = update_in.model_dump(
             exclude_unset=True,
-            exclude_none=True,
         )
 
         for field, value in update_data.items():
@@ -174,6 +173,30 @@ class KnowledgeUpdateService:
             result.append(item)
 
         return result
+
+    @staticmethod
+    def list_all_for_admin(
+        db: Session,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> List[KnowledgeUpdateOut]:
+        """管理员查看全部知识更新，包括草稿。"""
+
+        statement = (
+            select(KnowledgeUpdate)
+            .order_by(KnowledgeUpdate.updated_at.desc())
+            .offset(skip)
+            .limit(limit)
+        )
+
+        knowledge_updates = db.execute(
+            statement,
+        ).scalars().all()
+
+        return [
+            KnowledgeUpdateOut.model_validate(item)
+            for item in knowledge_updates
+        ]
 
     @staticmethod
     def mark_as_read(
